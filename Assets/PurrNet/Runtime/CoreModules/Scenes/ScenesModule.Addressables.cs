@@ -98,7 +98,7 @@ namespace PurrNet.Modules
 
             try
             {
-                handle = Addressables.LoadSceneAsync(guid, parameters, true, 100);
+                handle = Addressables.LoadSceneAsync(guid, parameters, action.parameters.activateOnLoad, 100);
             }
             catch (System.Exception e)
             {
@@ -378,77 +378,13 @@ namespace PurrNet.Modules
             AssetReference sceneRef,
             PurrSceneSettings settings)
         {
-            if (!_asServer)
-            {
-                PurrLogger.LogError("Only server can load scenes");
-                return default;
-            }
-
             if (sceneRef == null || !sceneRef.RuntimeKeyIsValid())
             {
                 PurrLogger.LogError("LoadAddressableSceneAsync failed: AssetReference is null or invalid");
                 return default;
             }
 
-            var idToAssign = GetNextID();
-            var guid = sceneRef.AssetGUID;
-
-            if (settings.mode == LoadSceneMode.Single)
-            {
-                if (TryGetSceneID(_networkManager.gameObject.scene, out var nmId) &&
-                    TryGetSceneState(nmId, out var nmScene))
-                {
-                    if (!IsDontDestroyOnLoadScene(nmScene.scene))
-                    {
-                        PurrLogger.LogError("Network manager scene is not DontDestroyOnLoad and you are trying to" +
-                                            " load a new scene with LoadSceneMode.Single");
-                    }
-                }
-
-                for (var i = 0; i < _rawScenes.Count; i++)
-                {
-                    var isDontDestroyOnLoadScene = IsDontDestroyOnLoadScene(_scenes[_rawScenes[i]].scene);
-                    if (!isDontDestroyOnLoadScene)
-                        RemoveScene(_scenes[_rawScenes[i]].scene);
-                }
-            }
-
-            _history.AddLoadAddressableAction(new LoadAddressableSceneAction
-            {
-                guid = guid,
-                sceneID = idToAssign,
-                parameters = settings
-            });
-            _sceneActionScenes.Add(idToAssign);
-
-            var parameters = new LoadSceneParameters(settings.mode, settings.physicsMode);
-            var handle = Addressables.LoadSceneAsync(sceneRef, parameters, true, 100);
-
-            _pendingAddressableOperations.Add(new PendingAddressableSceneOperation
-            {
-                guid = guid,
-                handle = handle,
-                idToAssign = idToAssign,
-                settings = settings
-            });
-
-            RegisterAddressableCompletionCallback(handle);
-
-            if (_networkManager.isHost)
-            {
-                var clientModule = _networkManager.GetModule<ScenesModule>(false);
-                clientModule._pendingAddressableOperations.Add(new PendingAddressableSceneOperation
-                {
-                    guid = guid,
-                    handle = handle,
-                    idToAssign = idToAssign,
-                    settings = settings
-                });
-                clientModule._sceneActionScenes.Add(idToAssign);
-                clientModule.RegisterAddressableCompletionCallback(handle);
-            }
-
-            return handle;
+            return LoadAddressableSceneAsync(sceneRef.AssetGUID, settings);
         }
 
         /// <summary>
@@ -503,7 +439,7 @@ namespace PurrNet.Modules
             _sceneActionScenes.Add(idToAssign);
 
             var parameters = new LoadSceneParameters(settings.mode, settings.physicsMode);
-            var handle = Addressables.LoadSceneAsync(guid, parameters, true, 100);
+            var handle = Addressables.LoadSceneAsync(guid, parameters, settings.activateOnLoad, 100);
 
             _pendingAddressableOperations.Add(new PendingAddressableSceneOperation
             {

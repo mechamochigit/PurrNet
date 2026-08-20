@@ -43,6 +43,7 @@ namespace PurrNet.Modules
         public LoadSceneMode mode;
         public LocalPhysicsMode physicsMode;
         public bool isPublic;
+        public bool activateOnLoad;
     }
 
     public delegate void OnSceneActionEvent(SceneID scene, bool asServer);
