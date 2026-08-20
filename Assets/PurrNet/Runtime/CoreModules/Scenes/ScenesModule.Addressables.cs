@@ -33,7 +33,7 @@ namespace PurrNet.Modules
         private readonly Dictionary<string, List<SceneID>> _addressableSceneGuidToIds =
             new Dictionary<string, List<SceneID>>();
 
-        public delegate void OnAddressableSceneEvent(SceneID sceneId, string guid, bool asServer);
+        public delegate void OnAddressableSceneEvent(SceneID sceneId, string guid, AsyncOperationHandle<SceneInstance> handle, bool asServer);
 
         /// <summary>
         /// Fired when an Addressable scene begins loading.
@@ -72,7 +72,7 @@ namespace PurrNet.Modules
                     AddScene(scene, op.settings, op.idToAssign);
                     RegisterAddressableSceneHandle(op.idToAssign, op.guid, op.handle);
                     
-                    onAddressableSceneLoaded?.Invoke(op.idToAssign, op.guid, _asServer);
+                    onAddressableSceneLoaded?.Invoke(op.idToAssign, op.guid, op.handle, _asServer);
                 }
                 else
                 {
@@ -131,7 +131,7 @@ namespace PurrNet.Modules
                 clientModule.RegisterAddressableCompletionCallback(handle);
             }
 
-            onAddressableSceneStartLoading?.Invoke(action.sceneID, guid, _asServer);
+            onAddressableSceneStartLoading?.Invoke(action.sceneID, guid, handle, _asServer);
         }
 
         private bool IsScenePendingAddressable(SceneID sceneId)
