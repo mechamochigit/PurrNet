@@ -1,5 +1,6 @@
 using System;
 using PurrNet.Modules;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace PurrNet.Packing
@@ -10,14 +11,14 @@ namespace PurrNet.Packing
         {
             // Calculate the range and bits needed
             var range = (ulong)(maxValue - minValue);
-            return (byte)Math.Ceiling(Math.Log(range + 1, 2));
+            return (byte)(64 - math.lzcnt(range));
         }
 
         public static byte GetBitCount(ulong minValue, ulong maxValue)
         {
             // Calculate the range and bits needed
             var range = maxValue - minValue;
-            return (byte)Math.Ceiling(Math.Log(range + 1, 2));
+            return (byte)(64 - math.lzcnt(range));
         }
 
         [UsedByIL]
