@@ -24,8 +24,8 @@ namespace PurrNet.Packing
         [UsedByIL]
         public void WriteInteger(long data, long minValue, long maxValue, byte bitCount)
         {
-            Debug.Assert(data < minValue, $"Data is less than min value; {data} < {minValue}");
-            Debug.Assert(data > maxValue, $"Data is greater than max value; {data} > {maxValue}");
+            Debug.Assert(data >= minValue, $"Data is less than min value; {data} < {minValue}");
+            Debug.Assert(data <= maxValue, $"Data is greater than max value; {data} > {maxValue}");
             WriteBits((ulong)(data - minValue), bitCount);
         }
 
@@ -56,8 +56,8 @@ namespace PurrNet.Packing
         [UsedByIL]
         public void WriteInteger(ulong data, ulong minValue, ulong maxValue, byte bitCount)
         {
-            Debug.Assert(data < minValue, $"Data is less than min value; {data} < {minValue}");
-            Debug.Assert(data > maxValue, $"Data is greater than max value; {data} > {maxValue}");
+            Debug.Assert(data >= minValue, $"Data is less than min value; {data} < {minValue}");
+            Debug.Assert(data <= maxValue, $"Data is greater than max value; {data} > {maxValue}");
             WriteBits(data - minValue, bitCount);
         }
 
