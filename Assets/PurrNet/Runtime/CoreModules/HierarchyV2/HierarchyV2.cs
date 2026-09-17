@@ -1574,6 +1574,8 @@ namespace PurrNet.Modules
 
             var baseNid = new NetworkID(_nextId++, scope);
             SetupIdsLocally(id, ref baseNid);
+            AutoAssignOwnership(id);
+            RegisterIdsLocally(id);
             ApplyParentChange(id, id.parent, id.invertedPathToNearestParent, false, applyToTransform: false);
 
             if (!_asServer)
@@ -1592,8 +1594,6 @@ namespace PurrNet.Modules
 
                 FlushSpawnPackets();
             }
-
-            AutoAssignOwnership(id);
         }
 
         private static int _supressAutoOwner = 0;
@@ -1770,7 +1770,6 @@ namespace PurrNet.Modules
                 var sibling = siblings[i];
                 sibling.SetID(new NetworkID(baseNid, (uint)i));
                 sibling.SetIdentity(_manager, this, _sceneId, _asServer, isHost);
-                RegisterIdentity(sibling, true);
             }
 
             // update next id
@@ -1787,6 +1786,28 @@ namespace PurrNet.Modules
             }
         }
 
+        private void RegisterIdsLocally(NetworkIdentity root)
+        {
+            using var siblings = DisposableList<NetworkIdentity>.Create(16);
+            root.GetComponents(siblings.list);
+
+            // handle root
+            for (var i = 0; i < siblings.Count; i++)
+            {
+                var sibling = siblings[i];
+                RegisterIdentity(sibling, true);
+            }
+
+            // handle children
+            if (root.directChildren == null)
+                return;
+
+            for (var i = 0; i < root.directChildren.Count; i++)
+            {
+                RegisterIdsLocally(root.directChildren[i]);
+            }
+        }
+        
         public NetworkID ReserveNetworkID()
         {
             if (_asServer)
