@@ -44,7 +44,7 @@ namespace PurrNet
 
         public PlayerID? owner => parent ? parent.owner : null;
 
-        public bool isController => !parent || parent.isController;
+        public bool isController => parent.isController;
 
         [UsedImplicitly]
         public bool IsController(bool ownerHasAuthority) => parent && parent.IsController(ownerHasAuthority);
