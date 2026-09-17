@@ -494,8 +494,8 @@ namespace PurrNet.Modules
 
             localPlayerId = data.playerId;
             lastNid = data.lastNidId;
-            onLocalPlayerReceivedID?.Invoke(data.playerId);
             onNetworkIDReceived?.Invoke(data.lastNidId);
+            onLocalPlayerReceivedID?.Invoke(data.playerId);
         }
 
         private void SendNewUserToAllClients(Connection conn, PlayerID playerId)
