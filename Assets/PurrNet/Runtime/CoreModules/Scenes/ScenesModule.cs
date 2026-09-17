@@ -75,6 +75,8 @@ namespace PurrNet.Modules
         /// </summary>
         public event OnSceneActionEvent onPreSceneLoaded;
 
+        public event OnSceneActionEvent onPrePreSceneLoaded;
+
         /// <summary>
         /// Callback for when a scene is loaded
         /// </summary>
@@ -166,6 +168,7 @@ namespace PurrNet.Modules
 
         private void PlayLoadEventsForScene(SceneID id)
         {
+            onPrePreSceneLoaded?.Invoke(id, _asServer);
             onPreSceneLoaded?.Invoke(id, _asServer);
             onSceneLoaded?.Invoke(id, _asServer);
             onPostSceneLoaded?.Invoke(id, _asServer);
