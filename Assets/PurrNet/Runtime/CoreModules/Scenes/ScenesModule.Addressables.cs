@@ -56,7 +56,7 @@ namespace PurrNet.Modules
             handle.Completed += _ => ProcessCompletedAddressableLoads();
         }
 
-        partial void ProcessCompletedAddressableLoads()
+        public partial void ProcessCompletedAddressableLoads()
         {
             for (var i = _pendingAddressableOperations.Count - 1; i >= 0; i--)
             {
@@ -68,6 +68,9 @@ namespace PurrNet.Modules
                 if (op.handle.Status == AsyncOperationStatus.Succeeded)
                 {
                     var scene = op.handle.Result.Scene;
+                    if (!scene.isLoaded)
+                        continue;
+                    
                     _sceneActionScenes.Add(op.idToAssign);
                     AddScene(scene, op.settings, op.idToAssign);
                     RegisterAddressableSceneHandle(op.idToAssign, op.guid, op.handle);

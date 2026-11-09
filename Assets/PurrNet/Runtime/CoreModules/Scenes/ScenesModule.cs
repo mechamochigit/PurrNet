@@ -1349,7 +1349,7 @@ namespace PurrNet.Modules
             }
         }
 
-        partial void ProcessCompletedAddressableLoads();
+        public partial void ProcessCompletedAddressableLoads();
         partial void RebuildAddressableHistoryFromLoadedScenes();
 
         public void FixedUpdate()
