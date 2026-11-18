@@ -391,6 +391,10 @@ namespace PurrNet.Modules
             if (!asServer)
                 return;
 
+            // Don't destroy any GameObjects if we are in the process of unloading the scene ourselves
+            if (!_scenes.TryGetSceneState(scene, out _))
+                return;
+            
             var owned = ownerships.TryGetOwnedObjects(player);
             var toDestroy = HashSetPool<GameObject>.Instantiate();
 

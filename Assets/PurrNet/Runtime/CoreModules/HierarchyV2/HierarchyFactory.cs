@@ -108,7 +108,7 @@ namespace PurrNet.Modules
                 return;
             }
 
-            var hierarchy = new HierarchyV2(_manager, scene, sceneState.scene, _scenePlayersModule, _playersManager,
+            var hierarchy = new HierarchyV2(_manager, scene, sceneState.scene, _scenes, _scenePlayersModule, _playersManager,
                 asServer);
 
             hierarchy.onEarlyIdentityAdded += OnEarlyIdentityAdded;

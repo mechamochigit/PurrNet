@@ -26,6 +26,7 @@ namespace PurrNet.Modules
         private readonly NetworkManager _manager;
         private readonly SceneID _sceneId;
         private readonly Scene _scene;
+        private readonly ScenesModule _scenes;
         private readonly ScenePlayersModule _scenePlayers;
         private readonly PlayersManager _playersManager;
         private readonly VisilityV2 _visibility;
@@ -130,13 +131,14 @@ namespace PurrNet.Modules
 
         private bool _isPlayerReady;
 
-        public HierarchyV2(NetworkManager manager, SceneID sceneId, Scene scene,
+        public HierarchyV2(NetworkManager manager, SceneID sceneId, Scene scene, ScenesModule scenes,
             ScenePlayersModule players, PlayersManager playersManager, bool asServer)
         {
             isReadyToSpawn = asServer;
             _manager = manager;
             _sceneId = sceneId;
             _scene = scene;
+            _scenes = scenes;
             _scenePlayers = players;
             _visibility = new VisilityV2(_manager);
             _asServer = asServer;
@@ -1396,7 +1398,8 @@ namespace PurrNet.Modules
 
                 ListPool<NetworkIdentity>.Destroy(children);
 
-                if (_scenePlayers.IsPlayerLoadedInScene(player, _sceneId))
+                // Don't send despawn packet if we are in the process of unloading the scene ourselves
+                if (_scenes.TryGetSceneState(_sceneId, out _) && _scenePlayers.IsPlayerLoadedInScene(player, _sceneId))
                 {
                     _manager.FlushBatchedRPCs();
                     SendDespawnPacket(player, identity, true);
